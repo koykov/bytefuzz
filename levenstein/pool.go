@@ -20,5 +20,6 @@ func Release(x *Ctx) {
 	if x == nil {
 		return
 	}
+	x.Reset()
 	p_.p.Put(x)
 }
