@@ -2,18 +2,14 @@ package levenstein
 
 import "sync"
 
-type p struct {
+type pool struct {
 	p sync.Pool
 }
 
-var p_ p
+var p = pool{p: sync.Pool{New: func() interface{} { return &Ctx{} }}}
 
 func Acquire() *Ctx {
-	x := p_.p.Get().(*Ctx)
-	if x == nil {
-		x = &Ctx{}
-	}
-	return x
+	return p.p.Get().(*Ctx)
 }
 
 func Release(x *Ctx) {
@@ -21,5 +17,5 @@ func Release(x *Ctx) {
 		return
 	}
 	x.Reset()
-	p_.p.Put(x)
+	p.p.Put(x)
 }
