@@ -2,8 +2,10 @@ package levenstein
 
 import (
 	"math"
+	"unsafe"
 
 	"github.com/koykov/byteconv"
+	"github.com/koykov/openrt"
 )
 
 const (
@@ -14,7 +16,9 @@ const (
 
 type Ctx struct {
 	text, target []rune
-	mx           [][]int
+
+	mx  [][]int32
+	buf []int32
 }
 
 func NewCtx() *Ctx {
@@ -35,17 +39,21 @@ func (ctx *Ctx) DistanceString(text, target string) int {
 
 func (ctx *Ctx) dist(text, target []rune) int {
 	w, h := len(target)+1, len(text)+1
+
+	if len(ctx.buf) < 2*w {
+		ctx.buf = make([]int32, 2*w)
+	}
 	for i := 0; i < 2; i++ {
-		ctx.mx = append(ctx.mx, make([]int, w))
-		ctx.mx[i][0] = i * costDel
+		ctx.mx = append(ctx.mx, ctx.buf[i*w:(i+1)*w])
+		ctx.mx[i][0] = int32(i * costDel)
 	}
 	for i := 1; i < w; i++ {
-		ctx.mx[0][i] = i * costIns
+		ctx.mx[0][i] = int32(i * costIns)
 	}
 
 	for i := 1; i < h; i++ {
 		c, p := ctx.mx[i%2], ctx.mx[(i-1)%2]
-		c[0] = i * costDel
+		c[0] = int32(i * costDel)
 		for j := 1; j < w; j++ {
 			dc := p[j] + costDel
 			sc := p[j-1]
@@ -56,17 +64,20 @@ func (ctx *Ctx) dist(text, target []rune) int {
 			c[j] = min3(dc, sc, ic)
 		}
 	}
-	return ctx.mx[(h-1)%2][w-1]
+	return int(ctx.mx[(h-1)%2][w-1])
 }
 
 func (ctx *Ctx) Reset() {
 	ctx.mx = ctx.mx[:0]
+	if len(ctx.buf) > 0 {
+		openrt.MemclrUnsafe(unsafe.Pointer(&ctx.buf[0]), len(ctx.buf)*4)
+	}
 	ctx.text = ctx.text[:0]
 	ctx.target = ctx.target[:0]
 }
 
-func min3(a, b, c int) int {
-	m := math.MaxInt
+func min3(a, b, c int32) int32 {
+	m := int32(math.MaxInt32)
 	if a < m {
 		m = a
 	}
