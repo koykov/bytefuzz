@@ -33,17 +33,13 @@ func (ctx *Ctx) DistanceString(text, target string) int {
 }
 
 func (ctx *Ctx) dist(text, target []rune) int {
-	w, h := len(text)+1, len(target)+1
+	w, h := len(target)+1, len(text)+1
 	for i := 0; i < 2; i++ {
-		if len(ctx.m) < cap(ctx.m) {
-			ctx.m = ctx.m[:i+1]
-		} else {
-			ctx.m = append(ctx.m, nil)
-		}
-		ctx.m[i] = append(ctx.m[i], i*ctx.costDel)
+		ctx.m = append(ctx.m, make([]int, w))
+		ctx.m[i][0] = i * ctx.costDel
 	}
 	for i := 1; i < w; i++ {
-		ctx.m[0] = append(ctx.m[0], i*ctx.costIns)
+		ctx.m[0][i] = i * ctx.costIns
 	}
 
 	for i := 1; i < h; i++ {
