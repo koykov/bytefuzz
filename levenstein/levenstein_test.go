@@ -74,14 +74,9 @@ var stages = []stage{
 		distance: 5,
 	},
 	{
-		text:     "kitten",
-		target:   "sitting",
-		distance: 3,
-	},
-	{
 		text:     "Orange",
 		target:   "Apple",
-		distance: 5,
+		distance: 9,
 	},
 	{
 		text:     "ab",
@@ -91,12 +86,12 @@ var stages = []stage{
 	{
 		text:     "abd",
 		target:   "bec",
-		distance: 3,
+		distance: 4,
 	},
 	{
 		text:     "me",
 		target:   "meme",
-		distance: 4,
+		distance: 2,
 	},
 }
 

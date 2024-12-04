@@ -1,6 +1,10 @@
 package levenstein
 
-import "github.com/koykov/byteconv"
+import (
+	"math"
+
+	"github.com/koykov/byteconv"
+)
 
 type Ctx struct {
 	text, target []rune
@@ -69,13 +73,15 @@ func (ctx *Ctx) Reset() {
 }
 
 func min3(a, b, c int) int {
-	if a < b {
-		if a < c {
-			return a
-		}
+	m := math.MaxInt
+	if a < m {
+		m = a
 	}
-	if b < c {
-		return b
+	if b < m {
+		m = b
 	}
-	return c
+	if c < m {
+		m = c
+	}
+	return m
 }
