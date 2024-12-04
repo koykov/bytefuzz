@@ -6,22 +6,19 @@ import (
 	"github.com/koykov/byteconv"
 )
 
+const (
+	costIns  = 1
+	costDel  = 1
+	costRepl = 2
+)
+
 type Ctx struct {
 	text, target []rune
-	m            [][]int
-
-	costIns, costDel, costRepl int
-
-	matchFn func(a, b rune) bool
+	mx           [][]int
 }
 
-func NewCtx(costIns, costDel, costRepl int, matchFn func(a, b rune) bool) *Ctx {
-	return &Ctx{
-		costIns:  costIns,
-		costDel:  costDel,
-		costRepl: costRepl,
-		matchFn:  matchFn,
-	}
+func NewCtx() *Ctx {
+	return &Ctx{}
 }
 
 func (ctx *Ctx) Distance(text, target []byte) int {
@@ -39,37 +36,33 @@ func (ctx *Ctx) DistanceString(text, target string) int {
 func (ctx *Ctx) dist(text, target []rune) int {
 	w, h := len(target)+1, len(text)+1
 	for i := 0; i < 2; i++ {
-		ctx.m = append(ctx.m, make([]int, w))
-		ctx.m[i][0] = i * ctx.costDel
+		ctx.mx = append(ctx.mx, make([]int, w))
+		ctx.mx[i][0] = i * costDel
 	}
 	for i := 1; i < w; i++ {
-		ctx.m[0][i] = i * ctx.costIns
+		ctx.mx[0][i] = i * costIns
 	}
 
 	for i := 1; i < h; i++ {
-		c, p := ctx.m[i%2], ctx.m[(i-1)%2]
-		c[0] = i * ctx.costDel
+		c, p := ctx.mx[i%2], ctx.mx[(i-1)%2]
+		c[0] = i * costDel
 		for j := 1; j < w; j++ {
-			dc := p[j] + ctx.costDel
+			dc := p[j] + costDel
 			sc := p[j-1]
-			if !ctx.matchFn(ctx.text[i-1], ctx.target[j-1]) {
-				sc += ctx.costRepl
+			if ctx.text[i-1] != ctx.target[j-1] {
+				sc += costRepl
 			}
-			ic := c[j-1] + ctx.costIns
+			ic := c[j-1] + costIns
 			c[j] = min3(dc, sc, ic)
 		}
 	}
-	return ctx.m[(h-1)%2][w-1]
+	return ctx.mx[(h-1)%2][w-1]
 }
 
 func (ctx *Ctx) Reset() {
-	ctx.m = ctx.m[:0]
+	ctx.mx = ctx.mx[:0]
 	ctx.text = ctx.text[:0]
 	ctx.target = ctx.target[:0]
-	ctx.costIns = 0
-	ctx.costDel = 0
-	ctx.costRepl = 0
-	ctx.matchFn = nil
 }
 
 func min3(a, b, c int) int {

@@ -98,7 +98,7 @@ var stages = []stage{
 func TestLevenstein(t *testing.T) {
 	for _, st := range stages {
 		t.Run(st.text, func(t *testing.T) {
-			ctx := NewCtx(1, 1, 2, func(a, b rune) bool { return a == b })
+			ctx := NewCtx()
 			dist := ctx.DistanceString(st.text, st.target)
 			if dist != st.distance {
 				t.Errorf("distance: got %d, want %d", dist, st.distance)
