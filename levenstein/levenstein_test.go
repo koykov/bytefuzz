@@ -98,10 +98,24 @@ var stages = []stage{
 func TestLevenstein(t *testing.T) {
 	for _, st := range stages {
 		t.Run(st.text, func(t *testing.T) {
-			ctx := NewCtx()
+			ctx := Acquire()
+			defer Release(ctx)
 			dist := ctx.DistanceString(st.text, st.target)
 			if dist != st.distance {
 				t.Errorf("distance: got %d, want %d", dist, st.distance)
+			}
+		})
+	}
+}
+
+func BenchmarkLevenstein(b *testing.B) {
+	for _, st := range stages {
+		b.Run(st.text, func(b *testing.B) {
+			b.ReportAllocs()
+			ctx := NewCtx()
+			for i := 0; i < b.N; i++ {
+				ctx.Reset()
+				ctx.DistanceString(st.text, st.target)
 			}
 		})
 	}
