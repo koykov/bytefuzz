@@ -13,6 +13,10 @@ type Ctx struct {
 	bufHSZ2 []uint64
 }
 
+func NewCtx() *Ctx {
+	return &Ctx{}
+}
+
 func (ctx *Ctx) Distance(text, target []byte) int {
 	a, b := text, target
 	if len(b) == 0 {
