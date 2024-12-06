@@ -1,4 +1,4 @@
-package levenstein
+package levenshtein
 
 import "testing"
 
@@ -95,7 +95,7 @@ var stages = []stage{
 	},
 }
 
-func TestLevenstein(t *testing.T) {
+func TestLevenshtein(t *testing.T) {
 	for _, st := range stages {
 		t.Run(st.text, func(t *testing.T) {
 			ctx := Acquire()
@@ -108,7 +108,7 @@ func TestLevenstein(t *testing.T) {
 	}
 }
 
-func BenchmarkLevenstein(b *testing.B) {
+func BenchmarkLevenshtein(b *testing.B) {
 	for _, st := range stages {
 		b.Run(st.text, func(b *testing.B) {
 			b.ReportAllocs()
