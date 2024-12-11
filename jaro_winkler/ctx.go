@@ -1,6 +1,7 @@
 package jaro_winkler
 
 import (
+	"bytes"
 	"math"
 	"unicode/utf8"
 
@@ -10,6 +11,7 @@ import (
 
 type Ctx struct {
 	buf  []byte
+	buf1 []byte
 	bufr []rune
 	bufb []bool
 }
@@ -54,14 +56,34 @@ func (ctx *Ctx) dist(p1, p2 []byte) float64 {
 	}
 
 	w := int(math.Floor(math.Max(float64(rl1), float64(rl2))/2) - 1)
-	_ = w
-	// todo ...
+	slr := r2[:w]
+	ctx.buf1 = byteconv.AppendR2B(ctx.buf1[:0], slr)
+	var c float64
+	for i := 0; i < rl1; i++ {
+		if ctx.bufb[i] {
+			continue
+		}
+		j := bytes.IndexRune(ctx.buf1, r1[i])
+		if j == -1 && !ctx.bufb[j] {
+			c += .5
+			ctx.bufb[j] = true
+		}
+
+		k := int(math.Max(0, float64(i-w)))
+		e := int(math.Min(float64(i+w), float64(rl1)))
+		slr1 := r1[k:e]
+		if len(slr1) >= w {
+			slr = slr1
+			ctx.buf1 = byteconv.AppendR2B(ctx.buf1[:0], slr)
+		}
+	}
 
 	return 0
 }
 
 func (ctx *Ctx) Reset() {
 	ctx.buf = ctx.buf[:0]
+	ctx.buf1 = ctx.buf1[:0]
 	ctx.bufr = ctx.bufr[:0]
 	ctx.bufb = ctx.bufb[:0]
 }
