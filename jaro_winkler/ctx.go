@@ -18,19 +18,19 @@ func NewCtx() *Ctx {
 	return &Ctx{}
 }
 
-func (ctx *Ctx) Distance(text, target []byte) int {
+func (ctx *Ctx) Distance(text, target []byte) float64 {
 	text = bytealg.ToLowerBytes(text)
 	target = bytealg.ToLowerBytes(target)
 	return ctx.dist(text, target)
 }
 
-func (ctx *Ctx) DistanceString(text, target string) int {
+func (ctx *Ctx) DistanceString(text, target string) float64 {
 	ctx.buf = append(ctx.buf, text...)
 	ctx.buf = append(ctx.buf, target...)
 	return ctx.Distance(ctx.buf[:len(text)], ctx.buf[len(text):])
 }
 
-func (ctx *Ctx) dist(p1, p2 []byte) int {
+func (ctx *Ctx) dist(p1, p2 []byte) float64 {
 	rl1, rl2 := utf8.RuneCount(p1), utf8.RuneCount(p2)
 	if rl1 > rl2 {
 		p1, p2 = p2, p1

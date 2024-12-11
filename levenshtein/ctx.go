@@ -25,19 +25,19 @@ func NewCtx() *Ctx {
 	return &Ctx{}
 }
 
-func (ctx *Ctx) Distance(text, target []byte) int {
+func (ctx *Ctx) Distance(text, target []byte) float64 {
 	ctx.text = byteconv.AppendB2R(ctx.text[:0], text)
 	ctx.target = byteconv.AppendB2R(ctx.target[:0], target)
 	return ctx.dist(ctx.text, ctx.target)
 }
 
-func (ctx *Ctx) DistanceString(text, target string) int {
+func (ctx *Ctx) DistanceString(text, target string) float64 {
 	ctx.text = byteconv.AppendS2R(ctx.text[:0], text)
 	ctx.target = byteconv.AppendS2R(ctx.target[:0], target)
 	return ctx.dist(ctx.text, ctx.target)
 }
 
-func (ctx *Ctx) dist(text, target []rune) int {
+func (ctx *Ctx) dist(text, target []rune) float64 {
 	w, h := len(target)+1, len(text)+1
 
 	if len(ctx.buf) < 2*w {
@@ -64,7 +64,7 @@ func (ctx *Ctx) dist(text, target []rune) int {
 			c[j] = min3(dc, sc, ic)
 		}
 	}
-	return int(ctx.mx[(h-1)%2][w-1])
+	return float64(ctx.mx[(h-1)%2][w-1])
 }
 
 func (ctx *Ctx) Reset() {

@@ -17,13 +17,13 @@ func NewCtx() *Ctx {
 	return &Ctx{}
 }
 
-func (ctx *Ctx) Distance(text, target []byte) int {
+func (ctx *Ctx) Distance(text, target []byte) float64 {
 	a, b := text, target
 	if len(b) == 0 {
-		return len(a)
+		return float64(len(a))
 	}
 	if len(a) == 0 {
-		return len(b)
+		return float64(len(b))
 	}
 	if len(a) < len(b) {
 		a, b = b, a
@@ -37,13 +37,13 @@ func (ctx *Ctx) Distance(text, target []byte) int {
 	return ctx.distN(ctx.text, ctx.target)
 }
 
-func (ctx *Ctx) DistanceString(text, target string) int {
+func (ctx *Ctx) DistanceString(text, target string) float64 {
 	a, b := text, target
 	if len(b) == 0 {
-		return len(a)
+		return float64(len(a))
 	}
 	if len(a) == 0 {
-		return len(b)
+		return float64(len(b))
 	}
 	if len(a) < len(b) {
 		a, b = b, a
@@ -57,14 +57,14 @@ func (ctx *Ctx) DistanceString(text, target string) int {
 	return ctx.distN(ctx.text, ctx.target)
 }
 
-func (ctx *Ctx) dist64(a, b []rune) (sc int) {
+func (ctx *Ctx) dist64(a, b []rune) (sc float64) {
 	pv := ^uint64(0)
 	mv := uint64(0)
 	for i := 0; i < len(a); i++ {
-		ctx.buf[a[i]] |= uint64(1) << sc
+		ctx.buf[a[i]] |= uint64(1) << uint64(sc)
 		sc++
 	}
-	ls := uint64(1) << (sc - 1)
+	ls := uint64(1) << uint64(sc-1)
 	_ = b[len(b)-1]
 	for i := 0; i < len(b); i++ {
 		eq := ctx.buf[b[i]]
@@ -89,7 +89,7 @@ func (ctx *Ctx) dist64(a, b []rune) (sc int) {
 	return sc
 }
 
-func (ctx *Ctx) distN(s1, s2 []rune) int {
+func (ctx *Ctx) distN(s1, s2 []rune) float64 {
 	n := len(s1)
 	m := len(s2)
 	_, _ = s1[n-1], s2[n-1]
@@ -171,7 +171,7 @@ func (ctx *Ctx) distN(s1, s2 []rune) int {
 	for k := start; k < vlen; k++ {
 		ctx.buf[s2[k]] = 0
 	}
-	return int(sc)
+	return float64(sc)
 }
 
 func (ctx *Ctx) Reset() {
