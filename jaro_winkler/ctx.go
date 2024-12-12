@@ -78,7 +78,17 @@ func (ctx *Ctx) dist(p1, p2 []byte) float64 {
 		}
 	}
 
-	return 0
+	t1, t2, t3 := float64(mc)/float64(rl1), float64(mc)/float64(rl2), (float64(mc)-c)/float64(mc)
+	sj := (t1 + t2 + t3) / 3
+	p := .1
+	var l int
+	cp := int(math.Min(4, float64(len(p1))))
+	for i := 0; i < len(p1[:cp]); i++ {
+		if p1[cp+i] == p2[cp+i] {
+			l++
+		}
+	}
+	return sj + float64(l)*p*(1-sj)
 }
 
 func (ctx *Ctx) Reset() {
