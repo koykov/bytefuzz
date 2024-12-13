@@ -4,7 +4,7 @@ import "testing"
 
 type stage struct {
 	text, target string
-	distance     int
+	distance     float64
 }
 
 var stages = []stage{
