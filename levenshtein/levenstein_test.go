@@ -102,7 +102,7 @@ func TestLevenshtein(t *testing.T) {
 			defer Release(ctx)
 			dist := ctx.DistanceString(st.text, st.target)
 			if dist != st.distance {
-				t.Errorf("distance: got %d, want %d", dist, st.distance)
+				t.Errorf("distance: got %f, want %f", dist, st.distance)
 			}
 		})
 	}
