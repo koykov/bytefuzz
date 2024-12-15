@@ -1,9 +1,6 @@
 package jaro_winkler
 
 import (
-	"bytes"
-	"math"
-
 	"github.com/koykov/bytealg"
 	"github.com/koykov/byteconv"
 )
@@ -47,6 +44,32 @@ func (ctx *Ctx) dist(p1, p2 []byte) float64 {
 	}
 	if sr = (ml / 2) - 1; sr < 0 {
 		sr = 0
+	}
+
+	ctx.bufb = growBool(ctx.bufb, rl1+rl2)
+	f1, f2 := ctx.bufb[:rl1], ctx.bufb[:rl1]
+
+	var cc int
+	for i := 0; i < rl1; i++ {
+		lo := 0
+		if i > sr {
+			lo = i - sr
+		}
+		hi := rl2 - 1
+		if i+sr < rl2 {
+			hi = i + sr
+		}
+		for j := lo; j < hi; j++ {
+			if !ctx.bufb[j] && r2[j] == r1[i] {
+				f1[i] = true
+				f2[j] = true
+				cc++
+				break
+			}
+		}
+	}
+	if cc == 0 {
+		return 0
 	}
 
 	return 0
@@ -103,4 +126,12 @@ func (ctx *Ctx) Reset() {
 	ctx.buf1 = ctx.buf1[:0]
 	ctx.bufr = ctx.bufr[:0]
 	ctx.bufb = ctx.bufb[:0]
+}
+
+func growBool(buf []bool, ln int) []bool {
+	if cap(buf) >= ln {
+		return buf[:ln]
+	}
+	buf = append(buf, make([]bool, cap(buf)+ln)...)
+	return buf[:ln]
 }
