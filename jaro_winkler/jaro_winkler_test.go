@@ -28,3 +28,16 @@ func TestJaroWinkler(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkJaroWinkler(b *testing.B) {
+	for _, st := range stages {
+		b.Run(st.text, func(b *testing.B) {
+			b.ReportAllocs()
+			ctx := NewCtx()
+			for i := 0; i < b.N; i++ {
+				ctx.Reset()
+				ctx.DistanceString(st.text, st.target)
+			}
+		})
+	}
+}
