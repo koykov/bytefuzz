@@ -89,53 +89,20 @@ func (ctx *Ctx) dist(p1, p2 []byte) float64 {
 	}
 	tc /= 2
 
-	return 0
-	// var mc int
-	// for i := 0; i < rl1; i++ {
-	// 	var m bool
-	// 	if r1[i] == r2[i] {
-	// 		mc, m = mc+1, true
-	// 	}
-	// 	ctx.bufb = append(ctx.bufb, m)
-	// }
-	// if mc == 0 {
-	// 	return 0
-	// }
-	//
-	// w := int(math.Floor(math.Max(float64(rl1), float64(rl2))/2) - 1)
-	// slr := r2[:w]
-	// ctx.buf1 = byteconv.AppendR2B(ctx.buf1[:0], slr)
-	// var c float64
-	// for i := 0; i < rl1; i++ {
-	// 	if ctx.bufb[i] {
-	// 		continue
-	// 	}
-	// 	j := bytes.IndexRune(ctx.buf1, r1[i])
-	// 	if j == -1 && !ctx.bufb[j] {
-	// 		c += .5
-	// 		ctx.bufb[j] = true
-	// 	}
-	//
-	// 	k := int(math.Max(0, float64(i-w)))
-	// 	e := int(math.Min(float64(i+w), float64(rl1)))
-	// 	slr1 := r1[k:e]
-	// 	if len(slr1) >= w {
-	// 		slr = slr1
-	// 		ctx.buf1 = byteconv.AppendR2B(ctx.buf1[:0], slr)
-	// 	}
-	// }
-	//
-	// t1, t2, t3 := float64(mc)/float64(rl1), float64(mc)/float64(rl2), (float64(mc)-c)/float64(mc)
-	// sj := (t1 + t2 + t3) / 3
-	// p := .1
-	// var l int
-	// cp := int(math.Min(4, float64(len(p1))))
-	// for i := 0; i < len(p1[:cp]); i++ {
-	// 	if p1[cp+i] == p2[cp+i] {
-	// 		l++
-	// 	}
-	// }
-	// return sj + float64(l)*p*(1-sj)
+	w := (float64(cc)/float64(rl1) + float64(cc)/float64(rl2) + (float64(cc)-float64(tc))/float64(cc)) / 3
+	if w > .7 && rl1 > 3 && rl2 > 3 {
+		i, j := 0, 4
+		if j < ml {
+			j = ml
+		}
+		for i < j && r1[i] == r2[i] {
+			i++
+		}
+		if i > 0 {
+			w += float64(i) * .1 * (1 - w)
+		}
+	}
+	return w
 }
 
 func (ctx *Ctx) Reset() {
