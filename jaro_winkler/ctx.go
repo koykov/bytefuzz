@@ -3,7 +3,6 @@ package jaro_winkler
 import (
 	"bytes"
 	"math"
-	"unicode/utf8"
 
 	"github.com/koykov/bytealg"
 	"github.com/koykov/byteconv"
@@ -33,62 +32,70 @@ func (ctx *Ctx) DistanceString(text, target string) float64 {
 }
 
 func (ctx *Ctx) dist(p1, p2 []byte) float64 {
-	rl1, rl2 := utf8.RuneCount(p1), utf8.RuneCount(p2)
-	if rl1 > rl2 {
-		p1, p2 = p2, p1
-		rl1, rl2 = rl2, rl1
-	}
-
 	ctx.bufr = byteconv.AppendBytesToRunes(ctx.bufr, p1)
+	r1, rl1 := ctx.bufr, len(ctx.bufr)
 	ctx.bufr = byteconv.AppendBytesToRunes(ctx.bufr, p2)
-	r1, r2 := ctx.bufr[:rl1], ctx.bufr[rl1:]
+	r2, rl2 := ctx.bufr[rl1:], len(ctx.bufr)-rl1
 
-	var mc int
-	for i := 0; i < rl1; i++ {
-		var m bool
-		if r1[i] == r2[i] {
-			mc, m = mc+1, true
-		}
-		ctx.bufb = append(ctx.bufb, m)
-	}
-	if mc == 0 {
+	if rl1 == 0 || rl2 == 0 {
 		return 0
 	}
 
-	w := int(math.Floor(math.Max(float64(rl1), float64(rl2))/2) - 1)
-	slr := r2[:w]
-	ctx.buf1 = byteconv.AppendR2B(ctx.buf1[:0], slr)
-	var c float64
-	for i := 0; i < rl1; i++ {
-		if ctx.bufb[i] {
-			continue
-		}
-		j := bytes.IndexRune(ctx.buf1, r1[i])
-		if j == -1 && !ctx.bufb[j] {
-			c += .5
-			ctx.bufb[j] = true
-		}
-
-		k := int(math.Max(0, float64(i-w)))
-		e := int(math.Min(float64(i+w), float64(rl1)))
-		slr1 := r1[k:e]
-		if len(slr1) >= w {
-			slr = slr1
-			ctx.buf1 = byteconv.AppendR2B(ctx.buf1[:0], slr)
-		}
+	var ml, sr int
+	if ml = rl1; ml < rl2 {
+		ml = rl2
+	}
+	if sr = (ml / 2) - 1; sr < 0 {
+		sr = 0
 	}
 
-	t1, t2, t3 := float64(mc)/float64(rl1), float64(mc)/float64(rl2), (float64(mc)-c)/float64(mc)
-	sj := (t1 + t2 + t3) / 3
-	p := .1
-	var l int
-	cp := int(math.Min(4, float64(len(p1))))
-	for i := 0; i < len(p1[:cp]); i++ {
-		if p1[cp+i] == p2[cp+i] {
-			l++
-		}
-	}
-	return sj + float64(l)*p*(1-sj)
+	return 0
+	// var mc int
+	// for i := 0; i < rl1; i++ {
+	// 	var m bool
+	// 	if r1[i] == r2[i] {
+	// 		mc, m = mc+1, true
+	// 	}
+	// 	ctx.bufb = append(ctx.bufb, m)
+	// }
+	// if mc == 0 {
+	// 	return 0
+	// }
+	//
+	// w := int(math.Floor(math.Max(float64(rl1), float64(rl2))/2) - 1)
+	// slr := r2[:w]
+	// ctx.buf1 = byteconv.AppendR2B(ctx.buf1[:0], slr)
+	// var c float64
+	// for i := 0; i < rl1; i++ {
+	// 	if ctx.bufb[i] {
+	// 		continue
+	// 	}
+	// 	j := bytes.IndexRune(ctx.buf1, r1[i])
+	// 	if j == -1 && !ctx.bufb[j] {
+	// 		c += .5
+	// 		ctx.bufb[j] = true
+	// 	}
+	//
+	// 	k := int(math.Max(0, float64(i-w)))
+	// 	e := int(math.Min(float64(i+w), float64(rl1)))
+	// 	slr1 := r1[k:e]
+	// 	if len(slr1) >= w {
+	// 		slr = slr1
+	// 		ctx.buf1 = byteconv.AppendR2B(ctx.buf1[:0], slr)
+	// 	}
+	// }
+	//
+	// t1, t2, t3 := float64(mc)/float64(rl1), float64(mc)/float64(rl2), (float64(mc)-c)/float64(mc)
+	// sj := (t1 + t2 + t3) / 3
+	// p := .1
+	// var l int
+	// cp := int(math.Min(4, float64(len(p1))))
+	// for i := 0; i < len(p1[:cp]); i++ {
+	// 	if p1[cp+i] == p2[cp+i] {
+	// 		l++
+	// 	}
+	// }
+	// return sj + float64(l)*p*(1-sj)
 }
 
 func (ctx *Ctx) Reset() {
