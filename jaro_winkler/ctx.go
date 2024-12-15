@@ -72,6 +72,23 @@ func (ctx *Ctx) dist(p1, p2 []byte) float64 {
 		return 0
 	}
 
+	var tc, k int
+	for i := 0; i < rl1; i++ {
+		if f1[i] {
+			j := k
+			for ; j < rl2; j++ {
+				if f2[j] {
+					k = j + 1
+					break
+				}
+			}
+			if r1[i] != r2[j] {
+				tc++
+			}
+		}
+	}
+	tc /= 2
+
 	return 0
 	// var mc int
 	// for i := 0; i < rl1; i++ {
