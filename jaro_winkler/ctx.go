@@ -39,7 +39,7 @@ func (ctx *Ctx) dist(p1, p2 []byte) float64 {
 	}
 
 	var ml, sr int
-	if ml = rl1; ml < rl2 {
+	if ml = rl1; ml > rl2 {
 		ml = rl2
 	}
 	if sr = (ml / 2) - 1; sr < 0 {
