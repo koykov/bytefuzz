@@ -98,8 +98,7 @@ var stages = []stage{
 func TestLevenshtein(t *testing.T) {
 	for _, st := range stages {
 		t.Run(st.text, func(t *testing.T) {
-			ctx := Acquire()
-			defer Release(ctx)
+			ctx := NewCtx()
 			dist := ctx.DistanceString(st.text, st.target)
 			if dist != st.distance {
 				t.Errorf("distance: got %f, want %f", dist, st.distance)
