@@ -19,3 +19,5 @@ func Release(x *Ctx) {
 	x.Reset()
 	p.p.Put(x)
 }
+
+var _, _ = Acquire, Release
