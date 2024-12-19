@@ -2,12 +2,14 @@ package cosine_similarity
 
 import (
 	"math"
+	"unsafe"
 
 	"github.com/koykov/byteconv"
+	"github.com/koykov/openrt"
 )
 
 type Ctx struct {
-	// todo implement me
+	vec [math.MaxUint8 * 2]uint64
 }
 
 func NewCtx() *Ctx {
@@ -15,31 +17,30 @@ func NewCtx() *Ctx {
 }
 
 func (ctx *Ctx) Distance(text, target []byte) float64 {
-	vect1 := make(map[byte]int)
-	for _, t := range text {
-		vect1[t]++
+	for i := 0; i < len(text); i++ {
+		ctx.vec[i]++
 	}
-	vect2 := make(map[byte]int)
-	for _, t := range target {
-		vect2[t]++
+	for i := 0; i < len(target); i++ {
+		ctx.vec[math.MaxUint8+i]++
 	}
+	vec0, vec1 := ctx.vec[:math.MaxUint8], ctx.vec[math.MaxUint8:]
 	// A·B
-	dotProduct := 0.0
-	for k, v := range vect1 {
-		dotProduct += float64(v) * float64(vect2[k])
+	var dotProduct float64
+	for i := 0; i < math.MaxUint8; i++ {
+		dotProduct += float64(vec0[i] * vec1[i])
 	}
 	// |A|*|B|
-	sum1 := 0.0
-	for _, v := range vect1 {
-		sum1 += math.Pow(float64(v), 2)
+	var sum1 float64
+	for i := 0; i < math.MaxUint8; i++ {
+		sum1 += math.Pow(float64(vec0[i]), 2)
 	}
-	sum2 := 0.0
-	for _, v := range vect2 {
-		sum2 += math.Pow(float64(v), 2)
+	var sum2 float64
+	for i := 0; i < math.MaxUint8; i++ {
+		sum2 += math.Pow(float64(vec1[i]), 2)
 	}
 	magnitude := math.Sqrt(sum1) * math.Sqrt(sum2)
 	if magnitude == 0 {
-		return 0.0
+		return 0
 	}
 	return dotProduct / magnitude
 }
@@ -49,4 +50,6 @@ func (ctx *Ctx) DistanceString(text, target string) float64 {
 	return ctx.Distance(ptext, ptarget)
 }
 
-func (ctx *Ctx) Reset() {}
+func (ctx *Ctx) Reset() {
+	openrt.MemclrUnsafe(unsafe.Pointer(&ctx.vec[0]), math.MaxUint8*16)
+}
