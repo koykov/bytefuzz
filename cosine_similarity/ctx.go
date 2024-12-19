@@ -25,24 +25,24 @@ func (ctx *Ctx) Distance(text, target []byte) float64 {
 	}
 	vec0, vec1 := ctx.vec[:math.MaxUint8], ctx.vec[math.MaxUint8:]
 	// A·B
-	var dotProduct float64
+	var dotp float64
 	for i := 0; i < math.MaxUint8; i++ {
-		dotProduct += float64(vec0[i] * vec1[i])
+		dotp += float64(vec0[i] * vec1[i])
 	}
 	// |A|*|B|
+	var sum0 float64
+	for i := 0; i < math.MaxUint8; i++ {
+		sum0 += math.Pow(float64(vec0[i]), 2)
+	}
 	var sum1 float64
 	for i := 0; i < math.MaxUint8; i++ {
-		sum1 += math.Pow(float64(vec0[i]), 2)
+		sum1 += math.Pow(float64(vec1[i]), 2)
 	}
-	var sum2 float64
-	for i := 0; i < math.MaxUint8; i++ {
-		sum2 += math.Pow(float64(vec1[i]), 2)
-	}
-	magnitude := math.Sqrt(sum1) * math.Sqrt(sum2)
-	if magnitude == 0 {
+	mag := math.Sqrt(sum0) * math.Sqrt(sum1)
+	if mag == 0 {
 		return 0
 	}
-	return dotProduct / magnitude
+	return dotp / mag
 }
 
 func (ctx *Ctx) DistanceString(text, target string) float64 {
