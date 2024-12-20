@@ -6,8 +6,8 @@ var stages = []struct {
 	text, target string
 	distance     float64
 }{
-	{"I love LA and New York", "I love New York and LA", 0},
-	{"I love LA and New York", "string similarity test...", 0},
+	{"I love LA and New York", "I love New York and LA", 1.0},
+	{"I love LA and New York", "string similarity test...", 0.3108947062827684},
 }
 
 func TestCosineSimilarity(t *testing.T) {
