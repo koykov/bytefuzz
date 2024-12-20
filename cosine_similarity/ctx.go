@@ -10,6 +10,7 @@ import (
 
 type Ctx struct {
 	vec [math.MaxUint8 * 2]float64
+	pc  [math.MaxUint8]float64
 }
 
 func NewCtx() *Ctx {
@@ -17,6 +18,7 @@ func NewCtx() *Ctx {
 }
 
 func (ctx *Ctx) Distance(text, target []byte) float64 {
+	_ = ctx.vec[math.MaxUint8*2-1]
 	for i := 0; i < len(text); i++ {
 		ctx.vec[text[i]]++
 	}
@@ -26,17 +28,24 @@ func (ctx *Ctx) Distance(text, target []byte) float64 {
 	vec0, vec1 := ctx.vec[:math.MaxUint8], ctx.vec[math.MaxUint8:]
 	// A·B
 	var dotp float64
+	_, _ = vec0[math.MaxUint8-1], vec1[math.MaxUint8-1]
 	for i := 0; i < math.MaxUint8; i++ {
 		dotp += vec0[i] * vec1[i]
 	}
 	// |A|*|B|
 	var sum0 float64
 	for i := 0; i < math.MaxUint8; i++ {
-		sum0 += math.Pow(vec0[i], 2)
+		if vec0[i] == 0 {
+			continue
+		}
+		sum0 += ctx.pow2(vec0[i])
 	}
 	var sum1 float64
 	for i := 0; i < math.MaxUint8; i++ {
-		sum1 += math.Pow(vec1[i], 2)
+		if vec1[i] == 0 {
+			continue
+		}
+		sum1 += ctx.pow2(vec1[i])
 	}
 	mag := math.Sqrt(sum0) * math.Sqrt(sum1)
 	if mag == 0 {
@@ -48,6 +57,16 @@ func (ctx *Ctx) Distance(text, target []byte) float64 {
 func (ctx *Ctx) DistanceString(text, target string) float64 {
 	ptext, ptarget := byteconv.S2B(text), byteconv.S2B(target)
 	return ctx.Distance(ptext, ptarget)
+}
+
+func (ctx *Ctx) pow2(x float64) float64 {
+	_ = ctx.pc[math.MaxUint8-1]
+	i := uint8(x)
+	if c := ctx.pc[i]; c > 0 {
+		return c
+	}
+	ctx.pc[i] = math.Pow(x, 2)
+	return ctx.pc[i]
 }
 
 func (ctx *Ctx) Reset() {
