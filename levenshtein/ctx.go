@@ -5,7 +5,7 @@ import (
 	"unsafe"
 
 	"github.com/koykov/byteconv"
-	"github.com/koykov/openrt"
+	"github.com/koykov/simd/memclr64"
 )
 
 const (
@@ -70,7 +70,7 @@ func (ctx *Ctx) dist(text, target []rune) float64 {
 func (ctx *Ctx) Reset() {
 	ctx.mx = ctx.mx[:0]
 	if len(ctx.buf) > 0 {
-		openrt.MemclrUnsafe(unsafe.Pointer(&ctx.buf[0]), len(ctx.buf)*4)
+		memclr64.ClearUnsafe(unsafe.Pointer(&ctx.buf[0]), len(ctx.buf)*4)
 	}
 	ctx.text = ctx.text[:0]
 	ctx.target = ctx.target[:0]

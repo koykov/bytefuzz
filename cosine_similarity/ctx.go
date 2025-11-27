@@ -5,7 +5,7 @@ import (
 	"unsafe"
 
 	"github.com/koykov/byteconv"
-	"github.com/koykov/openrt"
+	"github.com/koykov/simd/memclr64"
 )
 
 type Ctx struct {
@@ -70,5 +70,5 @@ func (ctx *Ctx) pow2(x float64) float64 {
 }
 
 func (ctx *Ctx) Reset() {
-	openrt.MemclrUnsafe(unsafe.Pointer(&ctx.vec[0]), math.MaxUint8*16)
+	memclr64.ClearUnsafe(unsafe.Pointer(&ctx.vec[0]), math.MaxUint8*16)
 }
