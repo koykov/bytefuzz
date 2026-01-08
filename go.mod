@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/koykov/bytealg v1.0.7
 	github.com/koykov/byteconv v1.0.1
-	github.com/koykov/simd v0.0.5
+	github.com/koykov/simd v0.0.9
 )
 
 require (
