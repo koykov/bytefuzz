@@ -5,6 +5,7 @@ import (
 	"unsafe"
 
 	"github.com/koykov/byteconv"
+	"github.com/koykov/bytefuzz"
 	"github.com/koykov/simd/memclr64"
 )
 
@@ -14,30 +15,30 @@ const (
 	costRepl = 2
 )
 
-type Ctx struct {
+type ctx struct {
 	text, target []rune
 
 	mx  [][]int32
 	buf []int32
 }
 
-func NewCtx() *Ctx {
-	return &Ctx{}
+func NewCtx() bytefuzz.Interface {
+	return &ctx{}
 }
 
-func (ctx *Ctx) Distance(text, target []byte) float64 {
+func (ctx *ctx) Distance(text, target []byte) float64 {
 	ctx.text = byteconv.AppendB2R(ctx.text[:0], text)
 	ctx.target = byteconv.AppendB2R(ctx.target[:0], target)
 	return ctx.dist(ctx.text, ctx.target)
 }
 
-func (ctx *Ctx) DistanceString(text, target string) float64 {
+func (ctx *ctx) DistanceString(text, target string) float64 {
 	ctx.text = byteconv.AppendS2R(ctx.text[:0], text)
 	ctx.target = byteconv.AppendS2R(ctx.target[:0], target)
 	return ctx.dist(ctx.text, ctx.target)
 }
 
-func (ctx *Ctx) dist(text, target []rune) float64 {
+func (ctx *ctx) dist(text, target []rune) float64 {
 	w, h := len(target)+1, len(text)+1
 
 	if len(ctx.buf) < 2*w {
@@ -67,7 +68,7 @@ func (ctx *Ctx) dist(text, target []rune) float64 {
 	return float64(ctx.mx[(h-1)%2][w-1])
 }
 
-func (ctx *Ctx) Reset() {
+func (ctx *ctx) Reset() {
 	ctx.mx = ctx.mx[:0]
 	if len(ctx.buf) > 0 {
 		memclr64.ClearUnsafe(unsafe.Pointer(&ctx.buf[0]), len(ctx.buf)*4)

@@ -4,20 +4,21 @@ import (
 	"math"
 
 	"github.com/koykov/byteconv"
+	"github.com/koykov/bytefuzz"
 )
 
-type Ctx struct {
+type ctx struct {
 	text, target []rune
 
 	buf     [math.MaxUint16]uint64
 	bufHSZ2 []uint64
 }
 
-func NewCtx() *Ctx {
-	return &Ctx{}
+func NewCtx() bytefuzz.Interface {
+	return &ctx{}
 }
 
-func (ctx *Ctx) Distance(text, target []byte) float64 {
+func (ctx *ctx) Distance(text, target []byte) float64 {
 	a, b := text, target
 	if len(b) == 0 {
 		return float64(len(a))
@@ -37,7 +38,7 @@ func (ctx *Ctx) Distance(text, target []byte) float64 {
 	return ctx.distN(ctx.text, ctx.target)
 }
 
-func (ctx *Ctx) DistanceString(text, target string) float64 {
+func (ctx *ctx) DistanceString(text, target string) float64 {
 	a, b := text, target
 	if len(b) == 0 {
 		return float64(len(a))
@@ -57,7 +58,7 @@ func (ctx *Ctx) DistanceString(text, target string) float64 {
 	return ctx.distN(ctx.text, ctx.target)
 }
 
-func (ctx *Ctx) dist64(a, b []rune) (sc float64) {
+func (ctx *ctx) dist64(a, b []rune) (sc float64) {
 	pv := ^uint64(0)
 	mv := uint64(0)
 	for i := 0; i < len(a); i++ {
@@ -89,7 +90,7 @@ func (ctx *Ctx) dist64(a, b []rune) (sc float64) {
 	return sc
 }
 
-func (ctx *Ctx) distN(s1, s2 []rune) float64 {
+func (ctx *ctx) distN(s1, s2 []rune) float64 {
 	n := len(s1)
 	m := len(s2)
 	_, _ = s1[n-1], s2[n-1]
@@ -174,7 +175,7 @@ func (ctx *Ctx) distN(s1, s2 []rune) float64 {
 	return float64(sc)
 }
 
-func (ctx *Ctx) Reset() {
+func (ctx *ctx) Reset() {
 	ctx.text = ctx.text[:0]
 	ctx.target = ctx.target[:0]
 	ctx.bufHSZ2 = ctx.bufHSZ2[:0]
