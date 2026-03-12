@@ -3,32 +3,33 @@ package jaro_winkler
 import (
 	"github.com/koykov/bytealg"
 	"github.com/koykov/byteconv"
+	"github.com/koykov/bytefuzz"
 )
 
-type Ctx struct {
+type ctx struct {
 	buf  []byte
 	buf1 []byte
 	bufr []rune
 	bufb []bool
 }
 
-func NewCtx() *Ctx {
-	return &Ctx{}
+func NewCtx() bytefuzz.Interface {
+	return &ctx{}
 }
 
-func (ctx *Ctx) Distance(text, target []byte) float64 {
+func (ctx *ctx) Distance(text, target []byte) float64 {
 	text = bytealg.ToLowerBytes(text)
 	target = bytealg.ToLowerBytes(target)
 	return ctx.dist(text, target)
 }
 
-func (ctx *Ctx) DistanceString(text, target string) float64 {
+func (ctx *ctx) DistanceString(text, target string) float64 {
 	ctx.buf = append(ctx.buf, text...)
 	ctx.buf = append(ctx.buf, target...)
 	return ctx.Distance(ctx.buf[:len(text)], ctx.buf[len(text):])
 }
 
-func (ctx *Ctx) dist(p1, p2 []byte) float64 {
+func (ctx *ctx) dist(p1, p2 []byte) float64 {
 	ctx.bufr = byteconv.AppendBytesToRunes(ctx.bufr, p1)
 	r1, rl1 := ctx.bufr, len(ctx.bufr)
 	ctx.bufr = byteconv.AppendBytesToRunes(ctx.bufr, p2)
@@ -105,7 +106,7 @@ func (ctx *Ctx) dist(p1, p2 []byte) float64 {
 	return w
 }
 
-func (ctx *Ctx) Reset() {
+func (ctx *ctx) Reset() {
 	ctx.buf = ctx.buf[:0]
 	ctx.buf1 = ctx.buf1[:0]
 	ctx.bufr = ctx.bufr[:0]

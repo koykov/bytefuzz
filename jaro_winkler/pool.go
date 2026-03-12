@@ -1,18 +1,22 @@
 package jaro_winkler
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/koykov/bytefuzz"
+)
 
 type pool struct {
 	p sync.Pool
 }
 
-var p = pool{p: sync.Pool{New: func() interface{} { return &Ctx{} }}}
+var p = pool{p: sync.Pool{New: func() interface{} { return &ctx{} }}}
 
-func Acquire() *Ctx {
-	return p.p.Get().(*Ctx)
+func Acquire() bytefuzz.Interface {
+	return p.p.Get().(*ctx)
 }
 
-func Release(x *Ctx) {
+func Release(x bytefuzz.Interface) {
 	if x == nil {
 		return
 	}

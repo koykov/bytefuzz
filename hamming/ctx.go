@@ -1,16 +1,19 @@
 package hamming
 
-import "github.com/koykov/byteconv"
+import (
+	"github.com/koykov/byteconv"
+	"github.com/koykov/bytefuzz"
+)
 
-type Ctx struct {
+type ctx struct {
 	buf []rune
 }
 
-func NewCtx() *Ctx {
-	return &Ctx{}
+func NewCtx() bytefuzz.Interface {
+	return &ctx{}
 }
 
-func (ctx *Ctx) Distance(text, target []byte) float64 {
+func (ctx *ctx) Distance(text, target []byte) float64 {
 	ctx.buf = byteconv.AppendB2R(ctx.buf, text)
 	r1 := ctx.buf
 	ctx.buf = byteconv.AppendB2R(r1, target)
@@ -18,7 +21,7 @@ func (ctx *Ctx) Distance(text, target []byte) float64 {
 	return ctx.dist(r1, r2)
 }
 
-func (ctx *Ctx) DistanceString(text, target string) float64 {
+func (ctx *ctx) DistanceString(text, target string) float64 {
 	ctx.buf = byteconv.AppendS2R(ctx.buf, text)
 	r1 := ctx.buf
 	ctx.buf = byteconv.AppendS2R(r1, target)
@@ -26,7 +29,7 @@ func (ctx *Ctx) DistanceString(text, target string) float64 {
 	return ctx.dist(r1, r2)
 }
 
-func (ctx *Ctx) dist(r1, r2 []rune) (d float64) {
+func (ctx *ctx) dist(r1, r2 []rune) (d float64) {
 	if len(r2) > len(r1) {
 		r1, r2 = r2, r1
 	}
@@ -39,6 +42,6 @@ func (ctx *Ctx) dist(r1, r2 []rune) (d float64) {
 	return
 }
 
-func (ctx *Ctx) Reset() {
+func (ctx *ctx) Reset() {
 	ctx.buf = ctx.buf[:0]
 }
