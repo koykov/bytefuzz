@@ -6,7 +6,7 @@ import (
 
 	"github.com/koykov/byteconv"
 	"github.com/koykov/bytefuzz"
-	"github.com/koykov/simd/memclr64"
+	"github.com/koykov/simd/memclr"
 )
 
 const (
@@ -71,7 +71,7 @@ func (ctx *ctx) dist(text, target []rune) float64 {
 func (ctx *ctx) Reset() {
 	ctx.mx = ctx.mx[:0]
 	if len(ctx.buf) > 0 {
-		memclr64.ClearUnsafe(unsafe.Pointer(&ctx.buf[0]), len(ctx.buf)*4)
+		memclr.ClearUnsafe(unsafe.Pointer(&ctx.buf[0]), len(ctx.buf)*4)
 	}
 	ctx.text = ctx.text[:0]
 	ctx.target = ctx.target[:0]

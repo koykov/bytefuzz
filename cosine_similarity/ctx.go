@@ -6,7 +6,7 @@ import (
 
 	"github.com/koykov/byteconv"
 	"github.com/koykov/bytefuzz"
-	"github.com/koykov/simd/memclr64"
+	"github.com/koykov/simd/memclr"
 )
 
 type ctx struct {
@@ -71,5 +71,5 @@ func (ctx *ctx) pow2(x float64) float64 {
 }
 
 func (ctx *ctx) Reset() {
-	memclr64.ClearUnsafe(unsafe.Pointer(&ctx.vec[0]), math.MaxUint8*16)
+	memclr.ClearUnsafe(unsafe.Pointer(&ctx.vec[0]), math.MaxUint8*16)
 }
